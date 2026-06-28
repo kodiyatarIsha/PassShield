@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cyber Password Generator & Strength Checker</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#08111f;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+padding:20px;
+}
+
+.container{
+width:100%;
+max-width:600px;
+background:#111827;
+padding:30px;
+border-radius:15px;
+box-shadow:0 0 20px #00ffcc55;
+}
+
+h1{
+text-align:center;
+color:#00ffd5;
+margin-bottom:20px;
+}
+
+.output{
+display:flex;
+gap:10px;
+margin-bottom:20px;
+}
+
+#password{
+flex:1;
+padding:12px;
+font-size:18px;
+border:none;
+border-radius:8px;
+outline:none;
+}
+
+button{
+padding:12px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+background:#00ffd5;
+font-weight:bold;
+}
+
+button:hover{
+background:#00c8aa;
+}
+
+.option{
+margin:12px 0;
+}
+
+label{
+display:block;
+margin-bottom:6px;
+}
+
+input[type="range"]{
+width:100%;
+}
+
+.checkbox{
+display:flex;
+justify-content:space-between;
+margin:10px 0;
+}
+
+.strength{
+margin-top:20px;
+}
+
+.bar{
+height:12px;
+background:#333;
+border-radius:10px;
+overflow:hidden;
+}
+
+.fill{
+height:100%;
+width:0%;
+background:red;
+transition:.3s;
+}
+
+#strengthText{
+margin-top:10px;
+font-weight:bold;
+text-align:center;
+}
+
+.footer{
+margin-top:20px;
+text-align:center;
+color:#aaa;
+font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🔐 Password Generator</h1>
+
+<div class="output">
+<input id="password" type="password" readonly>
+<button onclick="togglePassword()">👁</button>
+<button onclick="copyPassword()">📋</button>
+</div>
+
+<div class="option">
+<label>Password Length:
+<span id="lengthValue">16</span>
+</label>
+
+<input
+type="range"
+id="length"
+min="8"
+max="32"
+value="16"
+oninput="lengthValue.innerText=this.value">
+</div>
+
+<div class="checkbox">
+<label><input type="checkbox" id="upper" checked> Uppercase</label>
+</div>
+
+<div class="checkbox">
+<label><input type="checkbox" id="lower" checked> Lowercase</label>
+</div>
+
+<div class="checkbox">
+<label><input type="checkbox" id="number" checked> Numbers</label>
+</div>
+
+<div class="checkbox">
+<label><input type="checkbox" id="symbol" checked> Symbols</label>
+</div>
+
+<button style="width:100%;margin-top:20px;"
+onclick="generatePassword()">
+Generate Password
+</button>
+
+<div class="strength">
+<div class="bar">
+<div class="fill" id="fill"></div>
+</div>
+
+<p id="strengthText">
+Password Strength
+</p>
+
+</div>
+
+<div class="footer">
+Cyber Security Mini Project
+</div>
+
+</div>
+
+<script>
+
+const password=document.getElementById("password");
+
+const fill=document.getElementById("fill");
+
+const strengthText=document.getElementById("strengthText");
+
+let visible=false;
+
+function togglePassword(){
+
+visible=!visible;
+
+password.type=visible?"text":"password";
+
+}
+
+function copyPassword(){
+
+navigator.clipboard.writeText(password.value);
+
+alert("Password Copied!");
+
+}
+
+function generatePassword(){
+
+let chars="";
+
+const length=parseInt(document.getElementById("length").value);
+
+if(document.getElementById("upper").checked)
+chars+="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+if(document.getElementById("lower").checked)
+chars+="abcdefghijklmnopqrstuvwxyz";
+
+if(document.getElementById("number").checked)
+chars+="0123456789";
+
+if(document.getElementById("symbol").checked)
+chars+="!@#$%^&*()_+-={}[]<>?/";
+
+if(chars.length==0){
+
+alert("Select at least one option.");
+
+return;
+
+}
+
+let pass="";
+
+for(let i=0;i<length;i++){
+
+pass+=chars.charAt(
+Math.floor(Math.random()*chars.length)
+);
+
+}
+
+password.value=pass;
+
+checkStrength(pass);
+
+}
+function checkStrength(pass){
+
+let score=0;
+
+if(pass.length>=8) score++;
+
+if(/[A-Z]/.test(pass)) score++;
+
+if(/[a-z]/.test(pass)) score++;
+
+if(/[0-9]/.test(pass)) score++;
+
+if(/[^A-Za-z0-9]/.test(pass)) score++;
+
+switch(score){
+
+case 1:
+fill.style.width="20%";
+fill.style.background="red";
+strengthText.innerHTML="Very Weak";
+break;
+
+case 2:
+fill.style.width="40%";
+fill.style.background="orangered";
+strengthText.innerHTML="Weak";
+break;
+
+case 3:
+fill.style.width="60%";
+fill.style.background="orange";
+strengthText.innerHTML="Medium";
+break;
+
+case 4:
+fill.style.width="80%";
+fill.style.background="#00c853";
+strengthText.innerHTML="Strong";
+break;
+
+case 5:
+fill.style.width="100%";
+fill.style.background="#00ff66";
+strengthText.innerHTML="Very Strong";
+break;
+
+default:
+fill.style.width="0%";
+fill.style.background="red";
+strengthText.innerHTML="No Password";
+}
+
+}
+
+generatePassword();
+
+</script>
+
+</body>
+
+</html>
